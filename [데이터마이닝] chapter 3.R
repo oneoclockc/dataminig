@@ -220,3 +220,62 @@ head(predprob) # 각 종별 확률
 
 library(caret)
 confusionMatrix(predm, iris.test$Species) # 모델 정확도, 통계량 등 세부적인 정보
+
+
+
+
+
+# knn classifier
+library(class)
+set.seed(1234)
+n<-dim(iris)[1]
+n
+train <-sample(n,n/2)
+iris.train = iris[train,]
+iris.test = iris[-train,]
+head(iris.train)
+error <-numeric()
+for (i in 1:10){
+  error[i] <- mean(knn(iris.train[,1:4], iris.test[,1:4],iris.train[,5], k=i) != iris.test[,5] )
+} # knn(train x, test x, train y, k)
+
+error 
+
+# LOOCV
+error.cv<-numeric()
+for (i in 1:10){
+  error.cv[i]<-mean(knn.cv(iris.train[,1:4], iris.train[,5], k=i)!=iris.train[,5])
+  # knn.cv(train, cl, k = 1, l = 0, prob = FALSE, use.all = TRUE
+}
+error.cv 
+# 위 방법을 k의 개수를 결정하는데 사용해서는 안 된다. just 참고용
+
+library(caret)
+mycontrol = trainControl(method = "cv", number = 10, classProbs = T)
+set.seed(1234)
+fitknn = train(iris.train[,1:4], iris.train[,5], method = "knn", tuneGrid = expand.grid(k=1:10))
+fitknn
+fitknn$bestTune
+predknn=predict(fitknn,iris.test) 
+mean(predknn==iris.test$Species) # 모델 정확도 평가
+
+# standardize the predictors
+set.seed(1234)
+fitknn1 = train(iris.train[,1:4], iris.train[,5], method = "knn", tuneGrid = expand.grid(k=1:10), preProc = c("center", "scale"), trControl = mycontrol)
+fitknn1
+fitknn1$bestTune # best k
+
+predknn1 = predict(fitknn1, iris.test)
+mean(predknn1 ==iris.test$Species)
+
+# 시각화 
+par(mfrow = c(1,2))
+for (j in 1:1){
+  set.seed(1234*j)
+  n<-dim(iris)[1]
+  train <- sample(n,n/2)
+  error <- list()
+  for (i in 1:10) {
+    error[[i]] 
+  }
+  }
